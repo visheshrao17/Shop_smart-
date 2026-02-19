@@ -1,4 +1,13 @@
 const request = require('supertest');
+
+// Mock Prisma so loading app.js doesn't trigger DB initialization
+jest.mock('../src/lib/prismaClient', () => ({
+    user: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+    },
+}));
+
 const app = require('../src/app');
 
 describe('GET /api/health', () => {
