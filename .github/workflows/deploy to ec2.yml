@@ -15,9 +15,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup SSH Key
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key.pem
+          echo "$SSH_KEY" > ~/.ssh/ec2_key.pem
           chmod 600 ~/.ssh/ec2_key.pem
 
       - name: Add EC2 Host to known_hosts
@@ -26,6 +28,7 @@ jobs:
 
       - name: Deploy Images.html to EC2 nginx root
         run: |
+          # Use -o StrictHostKeyChecking=no as a fallback if keyscan fails
           scp -i ~/.ssh/ec2_key.pem Images.html ubuntu@${{ secrets.EC2_HOST }}:/tmp/Images.html
 
           ssh -i ~/.ssh/ec2_key.pem ubuntu@${{ secrets.EC2_HOST }} "
