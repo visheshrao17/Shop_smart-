@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Web Page</title>
+
+    <!-- Internal CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Welcome Vishesh 👋</h1>
+        <p>My First HTML Page</p>
+        <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_120x44dp.png" alt="Google Logo">    
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>About Me</h2>
+            <p>
+                I am learning Web Development and building amazing projects 🚀
+            </p>
+
+            <button onclick="showMessage()">
+                Click Me
+            </button>
+
+            <p id="msg"></p>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        function showMessage() {
+            document.getElementById("msg").innerText =
+                "Great! You just used JavaScript 🎉";
+        }
+    </script>
+
+</body>
+</html>
