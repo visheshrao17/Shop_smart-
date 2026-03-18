@@ -108,19 +108,39 @@ const ShopContextProvider = (props) => {
         return totalAmount;
     }
 
+    const defaultProducts = [
+        {
+            _id: 'default1',
+            name: 'Default Product 1',
+            price: 10,
+            image: 'https://via.placeholder.com/150',
+        },
+        {
+            _id: 'default2',
+            name: 'Default Product 2',
+            price: 20,
+            image: 'https://via.placeholder.com/150',
+        },
+        {
+            _id: 'default3',
+            name: 'Default Product 3',
+            price: 30,
+            image: 'https://via.placeholder.com/150',
+        },
+    ];
+
     const getProductsData = async () => {
         try {
-
-            const response = await axios.get(backendUrl + '/api/product/list')
+            const response = await axios.get(backendUrl + '/api/product/list');
             if (response.data.success) {
-                setProducts(response.data.products.reverse())
+                setProducts(response.data.products.reverse());
             } else {
-                toast.error(response.data.message)
+                toast.error(response.data.message);
             }
-
         } catch (error) {
-            console.log(error)
-            toast.error(error.message)
+            console.log(error);
+            toast.error('Backend not working. Showing default products.');
+            setProducts(defaultProducts);
         }
     }
 
