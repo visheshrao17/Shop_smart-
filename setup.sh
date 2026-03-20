@@ -6,11 +6,11 @@ echo "Currently in $PWD"
 DIR="./src"
 
 if ls "$DIR"; then
-   echo "$DIR is present"
+   echo "$DIR is present"
 else
-   echo "$DIR not found or could not be accessed"
-   echo "Exitting script, please add ./src folder"
-   exit 1
+   echo "$DIR not found or could not be accessed"
+   echo "Exitting script, please add ./src folder"
+   exit 1
 fi
 
 # Checking if node is installed
@@ -18,13 +18,13 @@ fi
 echo "Checking Node.js installation"
 
 if command -v node; then
-   echo "Node.js installation found"
-   NODE_VER=$(node -v)
-   echo "Node.js version: $NODE_VER"
+   echo "Node.js installation found"
+   NODE_VER=$(node -v)
+   echo "Node.js version: $NODE_VER"
 else
-   echo "Node.js not found"
-   echo "Script exitted, fix Node.js installation"
-   exit 1
+   echo "Node.js not found"
+   echo "Script exitted, fix Node.js installation"
+   exit 1
 fi
 
 # Checking if npm is installed
@@ -32,13 +32,13 @@ fi
 echo "Checking npm installation"
 
 if command -v npm; then
-   echo "npm installation found"
-   npm_ver=$(npm -v)
-   echo "npm version: $npm_ver"
+   echo "npm installation found"
+   npm_ver=$(npm -v)
+   echo "npm version: $npm_ver"
 else
-   echo "npm not found"
-   echo "Script exitted, fix npm installation"
-   exit 1
+   echo "npm not found"
+   echo "Script exitted, fix npm installation"
+   exit 1
 fi
 
 # Creating logs file
@@ -46,6 +46,10 @@ fi
 echo "Creating logs file"
 
 touch ./logs.txt
+
+# Idempotency check: Kill existing npm start processes before starting new ones
+echo "Stopping any existing application instances..."
+pkill -f "npm start" || echo "No existing instances found. Proceeding."
 
 # Running npm install and npm start in the background and logging into the logs.txt file
 
