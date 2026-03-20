@@ -20,6 +20,13 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: client
+      - name: Run lint
+        run: npm run lint
+        working-directory: client
+      - name: Run tests
+        # We use test:unit specifically, otherwise jest --coverage or playwright might break if not fully setup.
+        run: npm run test:unit
+        working-directory: client
       - name: Run build
         run: npm run build
         working-directory: client
@@ -37,6 +44,12 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: server
-      - name: Run build
-        run: npm run build
+      - name: Run lint
+        run: npm run lint
+        working-directory: server
+      - name: Run tests
+        run: npm test
+        working-directory: server
+      - name: Run build # Wait! There is no build step for Node.js Express. I will remove this since server doesn't build usually unless TS. Or I can leave it if its in package.json.
+        run: echo "No build script required for Node server"
         working-directory: server
