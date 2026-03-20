@@ -1,134 +1,85 @@
-import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Menu, X, ShoppingBag } from 'lucide-react';
-import { Link, NavLink } from 'react-router-dom';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-// Helper for tailwind class merging
-function cn(...inputs) {
-    return twMerge(clsx(inputs));
-}
+import React, { useContext, useState } from 'react'
+import {assets} from '../assets/assets'
+import { Link, NavLink } from 'react-router-dom'
+import { ShopContext } from '../context/ShopContext';
 
 const Navbar = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const navLinks = [
-        { name: 'Collections', path: '/products' },
-        { name: 'Heritage', path: '#' },
-        { name: 'Bespoke', path: '#' },
-        { name: 'World of Smart', path: '#' },
-    ];
+    const [visible,setVisible] = useState(false);
 
-    return (
-        <nav className="fixed top-0 z-50 w-full border-b border-gold bg-black/80 backdrop-blur-lg">
-            <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-12">
-                {/* Logo and Brand */}
-                <Link to="/" className="flex items-center gap-3 group">
-                    <span className="text-2xl font-serif tracking-widest text-white uppercase italic">
-                        Shop<span className="text-gold">Smart</span>
-                    </span>
-                </Link>
+    const {setShowSearch , getCartCount , navigate, token, setToken, setCartItems} = useContext(ShopContext);
 
-                {/* Desktop Navigation Links */}
-                <div className="hidden lg:flex lg:items-center lg:gap-12">
-                    {navLinks.map((item) => (
-                        <NavLink
-                            key={item.name}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                cn(
-                                    "text-[11px] uppercase tracking-[0.2em] transition-all hover:text-gold",
-                                    isActive && item.path !== '#' ? "text-gold" : "text-gray-400"
-                                )
-                            }
-                        >
-                            {item.name}
-                        </NavLink>
-                    ))}
-                </div>
+    const logout = () => {
+        navigate('/login')
+        localStorage.removeItem('token')
+        setToken('')
+        setCartItems({})
+    }
 
-                {/* Right Actions */}
-                <div className="flex items-center gap-8">
-                    <button className="text-gray-400 hover:text-white transition-colors">
-                        <Search size={20} strokeWidth={1.5} />
-                    </button>
+  return (
+    <div className='flex items-center justify-between py-5 font-medium'>
+      
+      <Link to='/'><img src={assets.logo} className='w-36' alt="" /></Link>
 
-                    <Link to="#" className="text-gray-400 hover:text-white transition-colors hidden sm:block">
-                        <User size={20} strokeWidth={1.5} />
-                    </Link>
+      <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
+        
+        <NavLink to='/' className='flex flex-col items-center gap-1'>
+            <p>HOME</p>
+            <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        </NavLink>
+        <NavLink to='/collection' className='flex flex-col items-center gap-1'>
+            <p>COLLECTION</p>
+            <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        </NavLink>
+        <NavLink to='/about' className='flex flex-col items-center gap-1'>
+            <p>ABOUT</p>
+            <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        </NavLink>
+        <NavLink to='/contact' className='flex flex-col items-center gap-1'>
+            <p>CONTACT</p>
+            <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        </NavLink>
 
-                    <button className="relative group text-gray-400 hover:text-white transition-colors">
-                        <ShoppingCart size={20} strokeWidth={1.5} />
-                        <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-black">
-                            0
-                        </span>
-                    </button>
+      </ul>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        className="lg:hidden text-gray-400"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        {isMenuOpen ? (
-                            <X size={24} strokeWidth={1.5} />
-                        ) : (
-                            <Menu size={24} strokeWidth={1.5} />
-                        )}
-                    </button>
-                </div>
-            </div>
-
-            {/* Mobile Navigation Menu */}
-            <div
-                className={cn(
-                    "absolute left-0 top-full w-full bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out lg:hidden",
-                    isMenuOpen ? "max-h-screen border-b border-white/10 py-6" : "max-h-0 overflow-hidden"
-                )}
-            >
-                <div className="flex flex-col space-y-4 px-6">
-                    {/* Mobile Search */}
-                    <div className="relative w-full md:hidden">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Search className="h-4 w-4 text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
-                            className="block w-full rounded-xl border-none bg-white/5 py-3 pl-10 pr-3 text-sm text-white placeholder-gray-400 ring-1 ring-white/10 outline-none"
-                            placeholder="Search products..."
-                        />
+      <div className='flex items-center gap-6'>
+            <img onClick={()=> { setShowSearch(true); navigate('/collection') }} src={assets.search_icon} className='w-5 cursor-pointer' alt="" />
+            
+            <div className='group relative'>
+                <img onClick={()=> token ? null : navigate('/login') } className='w-5 cursor-pointer' src={assets.profile_icon} alt="" />
+                {/* Dropdown Menu */}
+                {token && 
+                <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-4'>
+                    <div className='flex flex-col gap-2 w-36 py-3 px-5  bg-slate-100 text-gray-500 rounded'>
+                        <p className='cursor-pointer hover:text-black'>My Profile</p>
+                        <p onClick={()=>navigate('/orders')} className='cursor-pointer hover:text-black'>Orders</p>
+                        <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
                     </div>
+                </div>}
+            </div> 
+            <Link to='/cart' className='relative'>
+                <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
+                <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>{getCartCount()}</p>
+            </Link> 
+            <img onClick={()=>setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" /> 
+      </div>
 
-                    {/* Mobile Links */}
-                    {navLinks.map((item) => (
-                        <NavLink
-                            key={item.name}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                cn(
-                                    "text-lg font-medium transition-colors hover:text-white",
-                                    isActive && item.path !== '#' ? "text-indigo-400" : "text-gray-300"
-                                )
-                            }
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            {item.name}
-                        </NavLink>
-                    ))}
-
-                    <div className="pt-4 border-t border-white/10 flex flex-col gap-4">
-                        <button className="flex items-center gap-3 text-gray-300 hover:text-white">
-                            <User size={20} />
-                            <span>Your Account</span>
-                        </button>
-                        <button className="flex items-center gap-3 text-gray-300 hover:text-white">
-                            <ShoppingCart size={20} />
-                            <span>Cart (0)</span>
-                        </button>
+        {/* Sidebar menu for small screens */}
+        <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>
+                <div className='flex flex-col text-gray-600'>
+                    <div onClick={()=>setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
+                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
+                        <p>Back</p>
                     </div>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/collection'>COLLECTION</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/contact'>CONTACT</NavLink>
                 </div>
-            </div>
-        </nav>
-    );
-};
+        </div>
 
-export default Navbar;
+    </div>
+  )
+}
+
+export default Navbar

@@ -167,4 +167,3 @@ test.describe('Full User Journey', () => {
         // Should be on home page
         await expect(page).toHaveURL('/');
     });
-});

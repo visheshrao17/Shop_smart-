@@ -1,25 +1,10 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-    testDir: './e2e',
-    timeout: 30_000,
-    retries: 1,
-    use: {
-        baseURL: 'http://localhost:5173',
-        headless: true,
-        screenshot: 'only-on-failure',
-    },
-    projects: [
-        {
-            name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
-        },
-    ],
-    // Start dev server automatically for E2E tests
-    webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:5173',
-        reuseExistingServer: true,
-        timeout: 60_000,
-    },
+  testDir: './tests/e2e',
+  timeout: 30000,
+  use: {
+    baseURL: 'http://localhost:3000', // Replace with your dev server URL
+    headless: true,
+  },
 });
