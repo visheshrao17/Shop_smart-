@@ -3,24 +3,29 @@ import { ShopContext } from '../context/ShopContext'
 import Title from './Title';
 import ProductItem from './ProductItem';
 
-const RelatedProducts = ({category,subCategory}) => {
+const RelatedProducts = ({categories, currentProductId}) => {
 
     const { products } = useContext(ShopContext);
     const [related,setRelated] = useState([]);
 
     useEffect(()=>{
 
-        if (products.length > 0) {
+        if (products.length > 0 && categories) {
             
-            let productsCopy = products.slice();
-            
-            productsCopy = productsCopy.filter((item) => category === item.category);
-            productsCopy = productsCopy.filter((item) => subCategory === item.subCategory);
+            const categoryNames = categories.map(c => c.name);
+
+            let productsCopy = products.filter((item) => {
+                // Exclude current product
+                if (item._id === currentProductId) return false;
+                // Match any shared category
+                const itemCategoryNames = (item.categories || []).map(c => c.name);
+                return categoryNames.some(cat => itemCategoryNames.includes(cat));
+            });
 
             setRelated(productsCopy.slice(0,5));
         }
         
-    },[products])
+    },[products, categories, currentProductId])
 
   return (
     <div className='my-24'>

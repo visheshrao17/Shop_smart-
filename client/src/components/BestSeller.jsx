@@ -9,8 +9,8 @@ const BestSeller = () => {
     const [bestSeller,setBestSeller] = useState([]);
 
     useEffect(()=>{
-        const bestProduct = products.filter((item)=>(item.bestseller));
-        setBestSeller(bestProduct.slice(0,5))
+        // Show the first 5 products as featured (no bestseller flag in DB)
+        setBestSeller(products.slice(0,5))
     },[products])
 
   return (
@@ -18,7 +18,7 @@ const BestSeller = () => {
       <div className='text-center text-3xl py-8'>
         <Title text1={'BEST'} text2={'SELLERS'}/>
         <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
+        Discover our most popular products loved by customers everywhere.
         </p>
       </div>
 
