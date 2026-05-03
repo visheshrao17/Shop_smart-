@@ -1,23 +1,45 @@
-# Use the official Node.js 18 image as the base image
-FROM node:20
+# Stage 1: Build Environment
+FROM node:20 AS builder
+WORKDIR /app
 
-# Set the working directory in the container
-WORKDIR /backend
-
-# Copy package.json and package-lock.json to the working directory
-COPY backend/package*.json ./
-
-# Install dependencies
+# Copy dependency files
+COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application code to the working directory
-COPY backend/ ./
+# Copy application source code
+COPY . .
 
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Run Prisma migrations
+# Generate Prisma client
 RUN npx prisma generate
+
+# Stage 2: Production Environment
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy package files and install only production dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy necessary files from the builder stage
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/prisma ./prisma
+# Prisma requires the generated client in node_modules
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Configure Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:5001/ || exit 1
+
+# Setup non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && chown -R appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
+
+# Expose the application port
+EXPOSE 5001
 
 # Start the application
 CMD ["node", "src/server.js"]
