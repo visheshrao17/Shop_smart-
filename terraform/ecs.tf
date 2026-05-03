@@ -25,7 +25,7 @@ resource "aws_ecs_cluster" "app_cluster" {
 
 # Fetch existing AWS Academy Role
 data "aws_iam_role" "ecs_execution_role" {
-  name = "c195579a5018828l13514602t1w439220878-LabEksNodeRole-l0ewmStTrURQ"
+  name = "LabRole"
 }
 
 # ECS Task Definition
