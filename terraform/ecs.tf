@@ -13,6 +13,20 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+# ECR Repository for Client
+resource "aws_ecr_repository" "client_repo" {
+  name                 = "${var.app_name}-client-repo"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 # ECS Cluster
 resource "aws_ecs_cluster" "app_cluster" {
   name = "${var.app_name}-cluster"
@@ -41,7 +55,7 @@ resource "aws_ecs_task_definition" "app_task" {
   # The actual image will be pushed and updated by the GitHub Actions deployment step.
   container_definitions = jsonencode([
     {
-      name  = var.app_name
+      name  = "${var.app_name}-server"
       image = "nginx:latest" # Placeholder, replaced by CI/CD
       portMappings = [
         {
@@ -51,7 +65,6 @@ resource "aws_ecs_task_definition" "app_task" {
         }
       ]
       essential = true
-
       environment = [
         {
           name  = "NODE_ENV"
@@ -62,6 +75,18 @@ resource "aws_ecs_task_definition" "app_task" {
           value = tostring(var.container_port)
         }
       ]
+    },
+    {
+      name  = "${var.app_name}-client"
+      image = "nginx:latest" # Placeholder, replaced by CI/CD
+      portMappings = [
+        {
+          containerPort = var.client_port
+          hostPort      = var.client_port
+          protocol      = "tcp"
+        }
+      ]
+      essential = true
     }
   ])
 }

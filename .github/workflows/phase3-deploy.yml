@@ -8,9 +8,8 @@ on:
 
 jobs:
   build-and-deploy:
-    name: Docker Build, Push to ECR & Deploy to ECS
+    name: Build & Deploy Full Stack to ECS
     runs-on: ubuntu-latest
-    # Only run if Terraform applied successfully
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout Code
@@ -28,8 +27,8 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+      - name: Build, tag, and push SERVER image
+        id: build-server
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: shopsmart-repo
@@ -42,22 +41,44 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download ECS Task Definition
+      - name: Build, tag, and push CLIENT image
+        id: build-client
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: shopsmart-client-repo
+          IMAGE_TAG: ${{ github.sha }}
+        working-directory: ./client
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download Combined ECS Task Definition
         run: |
           aws ecs describe-task-definition --task-definition shopsmart-task --query taskDefinition > task-definition.json
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+      - name: Fill new Server image ID into Task Definition
+        id: task-def-server
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: shopsmart
-          image: ${{ steps.build-image.outputs.image }}
+          container-name: shopsmart-server
+          image: ${{ steps.build-server.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition
+      - name: Fill new Client image ID into Task Definition
+        id: task-def-combined
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-server.outputs.task-definition }}
+          container-name: shopsmart-client
+          image: ${{ steps.build-client.outputs.image }}
+
+      - name: Deploy Combined ECS Task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-def-combined.outputs.task-definition }}
           service: shopsmart-service
           cluster: shopsmart-cluster
           wait-for-service-stability: true
