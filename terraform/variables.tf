@@ -15,3 +15,9 @@ variable "container_port" {
   type        = number
   default     = 5001
 }
+
+variable "client_port" {
+  description = "The port the frontend client container listens on"
+  type        = number
+  default     = 80
+}
