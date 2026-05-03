@@ -11,4 +11,7 @@ router.post('/login', userController.login);
 // Protected & Admin routes
 router.get('/admin', protect, adminOnly, userController.getAdmin);
 
+// Protected routes
+router.post('/address', protect, userController.createAddress);
+
 module.exports = router;

@@ -26,8 +26,18 @@ const getAdmin = async (req, res) => {
   });
 };
 
+const createAddress = async (req, res) => {
+  const userId = req.user.id;
+  const address = await userService.createAddress(userId, req.body);
+  res.status(201).json({
+    success: true,
+    data: address,
+  });
+};
+
 module.exports = {
   register,
   login,
   getAdmin,
+  createAddress,
 };

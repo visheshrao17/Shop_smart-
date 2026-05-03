@@ -79,8 +79,29 @@ const getAdmins = async () => {
   return admins;
 };
 
+const createAddress = async (userId, addressData) => {
+  const { street, city, state, zip, country } = addressData;
+  if (!street || !city || !state || !zip || !country) {
+    throw new ApiError(400, 'Please provide street, city, state, zip, and country');
+  }
+
+  const address = await prisma.address.create({
+    data: {
+      userId,
+      street,
+      city,
+      state,
+      zip,
+      country,
+    },
+  });
+
+  return address;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getAdmins,
+  createAddress,
 };
