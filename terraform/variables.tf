@@ -21,3 +21,21 @@ variable "client_port" {
   type        = number
   default     = 80
 }
+
+variable "database_url" {
+  description = "Prisma DATABASE_URL for backend container"
+  type        = string
+  sensitive   = true
+}
+
+variable "direct_url" {
+  description = "Prisma DIRECT_URL for backend container"
+  type        = string
+  sensitive   = true
+}
+
+variable "jwt_secret" {
+  description = "JWT secret for backend container"
+  type        = string
+  sensitive   = true
+}

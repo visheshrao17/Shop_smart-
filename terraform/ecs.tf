@@ -73,6 +73,18 @@ resource "aws_ecs_task_definition" "app_task" {
         {
           name  = "PORT"
           value = tostring(var.container_port)
+        },
+        {
+          name  = "DATABASE_URL"
+          value = var.database_url
+        },
+        {
+          name  = "DIRECT_URL"
+          value = var.direct_url
+        },
+        {
+          name  = "JWT_SECRET"
+          value = var.jwt_secret
         }
       ]
     },
