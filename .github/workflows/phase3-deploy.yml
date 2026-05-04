@@ -66,6 +66,12 @@ jobs:
           task-definition: task-definition.json
           container-name: shopsmart-server
           image: ${{ steps.build-server.outputs.image }}
+          environment-variables: |
+            NODE_ENV=production
+            PORT=5001
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            DIRECT_URL=${{ secrets.DIRECT_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
 
       - name: Fill new Client image ID into Task Definition
         id: task-def-combined
