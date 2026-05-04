@@ -105,6 +105,18 @@ resource "aws_ecs_service" "app_service" {
     assign_public_ip = true
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.client_tg.arn
+    container_name   = "${var.app_name}-client"
+    container_port   = var.client_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.server_tg.arn
+    container_name   = "${var.app_name}-server"
+    container_port   = var.container_port
+  }
+
   # Ignore changes to the task definition made outside of Terraform (by GitHub Actions)
   lifecycle {
     ignore_changes = [task_definition]
