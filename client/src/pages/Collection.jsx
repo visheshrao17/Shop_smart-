@@ -3,10 +3,11 @@ import { ShopContext } from '../context/ShopContext'
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import ProductItemSkeleton from '../components/ProductItemSkeleton';
 
 const Collection = () => {
 
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, loading } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -85,7 +86,15 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            {allCategories.length > 0 ? (
+            {loading ? (
+              // Category filter skeletons
+              [...Array(4)].map((_, i) => (
+                <div key={i} className='flex gap-2 items-center animate-pulse'>
+                  <div className='w-3 h-3 bg-gray-200 rounded skeleton-shimmer' />
+                  <div className='h-3 bg-gray-200 rounded-full w-20 skeleton-shimmer' />
+                </div>
+              ))
+            ) : allCategories.length > 0 ? (
               allCategories.map((catName) => (
                 <p className='flex gap-2' key={catName}>
                   <input className='w-3' type="checkbox" value={catName} onChange={toggleCategory} /> {catName}
@@ -114,9 +123,13 @@ const Collection = () => {
         {/* Map Products */}
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
           {
-            filterProducts.map((item, index) => (
-              <ProductItem key={index} name={item.name} id={item._id} price={item.price} image={item.image} />
-            ))
+            loading
+              ? [...Array(8)].map((_, index) => (
+                  <ProductItemSkeleton key={index} />
+                ))
+              : filterProducts.map((item, index) => (
+                  <ProductItem key={index} name={item.name} id={item._id} price={item.price} image={item.image} />
+                ))
           }
         </div>
       </div>

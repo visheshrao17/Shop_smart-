@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import Title from './Title';
 import ProductItem from './ProductItem';
+import ProductItemSkeleton from './ProductItemSkeleton';
 
 const RelatedProducts = ({categories, currentProductId}) => {
 
-    const { products } = useContext(ShopContext);
+    const { products, loading } = useContext(ShopContext);
     const [related,setRelated] = useState([]);
 
     useEffect(()=>{
@@ -34,9 +35,14 @@ const RelatedProducts = ({categories, currentProductId}) => {
       </div>
 
       <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-        {related.map((item,index)=>(
-            <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image}/>
-        ))}
+        {loading
+          ? [...Array(5)].map((_, index) => (
+              <ProductItemSkeleton key={index} />
+            ))
+          : related.map((item,index)=>(
+              <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image}/>
+            ))
+        }
       </div>
     </div>
   )
