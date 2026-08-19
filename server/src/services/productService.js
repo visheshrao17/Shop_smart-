@@ -7,7 +7,7 @@ const addProduct = async (data) => {
     description,
     price,
     stock,
-    categories = [],
+    category,
     images = [],
   } = data;
 
@@ -15,11 +15,24 @@ const addProduct = async (data) => {
     throw new ApiError(400, 'Please provide name, description, and price');
   }
 
-  // Handle categories connection or creation
-  const categoryConnectOrCreate = categories.map((catName) => ({
-    where: { name: catName },
-    create: { name: catName },
-  }));
+  // Handle category connection or creation
+  let categoryData = undefined;
+  if (category) {
+    categoryData = {
+      connectOrCreate: {
+        where: { name: category },
+        create: { name: category },
+      }
+    };
+  } else if (data.categories && data.categories.length > 0) {
+    // Fallback for old API payload
+    categoryData = {
+      connectOrCreate: {
+        where: { name: data.categories[0] },
+        create: { name: data.categories[0] },
+      }
+    };
+  }
 
   // Handle images creation
   const imageCreates = images.map((url) => ({
@@ -32,15 +45,13 @@ const addProduct = async (data) => {
       description,
       price: parseFloat(price),
       stock: parseInt(stock) || 0,
-      categories: {
-        connectOrCreate: categoryConnectOrCreate,
-      },
+      ...(categoryData ? { category: categoryData } : {}),
       images: {
         create: imageCreates,
       },
     },
     include: {
-      categories: true,
+      category: true,
       images: true,
     },
   });
@@ -68,7 +79,7 @@ const getSingleProduct = async (id) => {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      categories: true,
+      category: true,
       images: true,
     },
   });
@@ -83,7 +94,7 @@ const getSingleProduct = async (id) => {
 const listProducts = async () => {
   const products = await prisma.product.findMany({
     include: {
-      categories: true,
+      category: true,
       images: true,
     },
     orderBy: {

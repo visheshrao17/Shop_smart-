@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState([]); // Array of {productId, quantity, id}
     const [products, setProducts] = useState([]);
+    const [categoriesList, setCategoriesList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState('')
     const navigate = useNavigate();
@@ -28,7 +29,8 @@ const ShopContextProvider = (props) => {
         ...p,
         _id: p.id,
         image: p.images ? p.images.map(img => img.url) : [],
-        categories: p.categories || [],
+        category: p.category ? p.category.name : null,
+        categories: p.category ? [p.category] : [], // fallback for existing components that expect array
     });
 
     const addToCart = async (productId) => {
@@ -106,6 +108,20 @@ const ShopContextProvider = (props) => {
         }
     }
 
+    const getCategoriesData = async () => {
+        try {
+            const response = await axios.get(backendUrl + '/api/category/list');
+            if (response.data.success) {
+                setCategoriesList(response.data.data.map(c => c.name));
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error('Could not fetch categories.');
+        }
+    }
+
     const getUserCart = async (tkn) => {
         try {
             const response = await axios.get(
@@ -123,6 +139,7 @@ const ShopContextProvider = (props) => {
 
     useEffect(() => {
         getProductsData()
+        getCategoriesData()
     }, [])
 
     useEffect(() => {
@@ -141,7 +158,7 @@ const ShopContextProvider = (props) => {
         cartItems, addToCart, setCartItems,
         getCartCount, updateQuantity,
         getCartAmount, navigate, backendUrl,
-        setToken, token, authHeaders
+        setToken, token, authHeaders, categoriesList
     }
 
     return (

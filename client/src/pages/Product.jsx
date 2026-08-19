@@ -63,6 +63,9 @@ const Product = () => {
               <img src={assets.star_dull_icon} alt="" className="w-3 5" />
               <p className='pl-2'>(122)</p>
           </div>
+          {productData.category && (
+            <p className='mt-3 text-sm text-gray-500'>Category: <span className='font-medium text-gray-700'>{productData.category}</span></p>
+          )}
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
           {productData.stock !== undefined && (

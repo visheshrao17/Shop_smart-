@@ -55,7 +55,8 @@ model Product {
   updatedAt   DateTime       @updatedAt
 
   images      ProductImage[]
-  categories  Category[]
+  categoryId  String?
+  category    Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   cartItems   CartItem[]
   orderItems  OrderItem[]
 }

@@ -3,7 +3,7 @@ name: Phase 1 - Testing
 on:
   push:
     branches:
-      - '**'
+      - labs-branch
 
 jobs:
   test:

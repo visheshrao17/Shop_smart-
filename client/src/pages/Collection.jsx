@@ -7,16 +7,13 @@ import ProductItemSkeleton from '../components/ProductItemSkeleton';
 
 const Collection = () => {
 
-  const { products, search, showSearch, loading } = useContext(ShopContext);
+  const { products, search, showSearch, loading, categoriesList } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [sortType, setSortType] = useState('relavent')
 
-  // Extract unique category names from products
-  const allCategories = [...new Set(
-    products.flatMap(p => (p.categories || []).map(c => c.name))
-  )];
+
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -37,8 +34,7 @@ const Collection = () => {
 
     if (category.length > 0) {
       productsCopy = productsCopy.filter(item => {
-        const itemCategoryNames = (item.categories || []).map(c => c.name);
-        return category.some(cat => itemCategoryNames.includes(cat));
+        return category.includes(item.category);
       });
     }
 
@@ -94,8 +90,8 @@ const Collection = () => {
                   <div className='h-3 bg-gray-200 rounded-full w-20 skeleton-shimmer' />
                 </div>
               ))
-            ) : allCategories.length > 0 ? (
-              allCategories.map((catName) => (
+            ) : categoriesList && categoriesList.length > 0 ? (
+              categoriesList.map((catName) => (
                 <p className='flex gap-2' key={catName}>
                   <input className='w-3' type="checkbox" value={catName} onChange={toggleCategory} /> {catName}
                 </p>
