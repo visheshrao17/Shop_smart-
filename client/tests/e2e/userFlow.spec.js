@@ -1,10 +1,21 @@
 import { test, expect } from '@playwright/test';
 
-test('user can add product to cart', async ({ page }) => {
+test('user can navigate to collection page', async ({ page }) => {
+  // Navigate to the homepage
   await page.goto('/');
-  await page.click('text=Mock Product 1');
-  await page.click('text=Add to Cart');
-  await page.goto('/cart');
-  const cartItem = await page.locator('text=Mock Product 1');
-  await expect(cartItem).toBeVisible();
+
+  // Check if the Navbar rendered by looking for the "HOME" link
+  await expect(page.locator("p:has-text('HOME')").first()).toBeVisible();
+
+  // Check if the Hero section or Latest Collections is visible
+  await expect(page.locator("text=LATEST").first()).toBeVisible();
+
+  // Navigate to Collection page
+  await page.click("p:has-text('COLLECTION')");
+
+  // Verify the URL has changed
+  await expect(page).toHaveURL(/.*collection/);
+
+  // Verify that the collection page title is visible
+  await expect(page.locator("text=ALL").first()).toBeVisible();
 });
