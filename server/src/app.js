@@ -9,6 +9,7 @@ const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/category', categoryRoutes);
+app.use('/api/health', healthRoutes);
 
 // Root route
 app.get('/', (req, res) => {
